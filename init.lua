@@ -1,16 +1,17 @@
-require("set")
+require("settings")
 require("remap")
-require("lazy-bootstrap")
-require("lazy-plugins")
 
-local function load_plugins()
-    local fn = vim.fn
-    local plugin_dir = fn.stdpath('config') .. '/lua/plugins'
-
-    for _, file in ipairs(fn.readdir(plugin_dir)) do
-        if file:match('.lua$') then
-            local plugin_name = file:sub(1, -5) -- usuwa rozszerzenia .lua
-            require('plugins.' .. plugin_name)
-        end
-    end
+local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
+if not vim.loop.fs_stat(lazypath) then
+    vim.fn.system({
+        "git",
+        "clone",
+        "--filter=blob:none",
+        "https://github.com/folke/lazy.nvim.git",
+        "--branch=stable", -- latest stable release
+        lazypath,
+    })
 end
+vim.opt.rtp:prepend(lazypath)
+
+require("lazy").setup("plugins")
